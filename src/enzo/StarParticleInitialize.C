@@ -116,11 +116,12 @@ int StarParticleInitialize(HierarchyEntry *Grids[], TopGridData *MetaData,
     cstar->MirrorToParticle();
   }
 
-//  fprintf(stdout, "\nin StarParticleInitialize.C \n", MetaData->NumberOfParticles); 
-//  fprintf(stdout, "MetaData->NumberOfParticles = %d\n", MetaData->NumberOfParticles); 
-//  fprintf(stdout, "NumberOfStarParticles now = %d\n", NumberOfStarParticles);
-//  fprintf(stdout, "NumberOfOtherParticles now = %d\n", NumberOfOtherParticles);
-
+  if (debug1){
+    fprintf(stdout, "\nin StarParticleInitialize.C \n"); 
+    fprintf(stdout, "MetaData->NumberOfParticles = %d\n", MetaData->NumberOfParticles); 
+    fprintf(stdout, "NumberOfStarParticles now = %d\n", NumberOfStarParticles);
+    fprintf(stdout, "NumberOfOtherParticles now = %d\n", NumberOfOtherParticles);
+  }
 
   LCAPERF_STOP("StarParticleInitialize");
   return SUCCESS;

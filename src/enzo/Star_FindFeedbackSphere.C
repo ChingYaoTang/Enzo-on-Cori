@@ -76,7 +76,7 @@ int Star::FindFeedbackSphere(LevelHierarchyEntry *LevelArray[], int level,
       (StarType == PopIII && FeedbackFlag == FORMATION &&
        Mass >= this->FinalMass)) {
     if (debug)
-      printf("StarParticle[%"ISYM"]: Accreted mass = %"GSYM" SolarMass.\n", Identifier, Mass);
+      printf("Star_FindFeedbackSphere: Skip StarParticle[%"ISYM"] with mass = %"GSYM" Msun.\n", Identifier, Mass);
     SkipMassRemoval = TRUE;
     return SUCCESS;
   }
@@ -264,7 +264,8 @@ int Star::FindFeedbackSphere(LevelHierarchyEntry *LevelArray[], int level,
 
       //      printf("AddFeedback: EjectaDensity = %"GSYM"\n", EjectaDensity);
       //      EjectaDensity = Shine[p].Mass / MassEnclosed;
-
+    if (debug1)
+      printf("Star_FindFeedbackSphere[lev=%d][Star_id=%d]: AccretedMass = %e Msun, EjectaDensity = %e H/cc\n)", level, Identifier, AccretedMass, EjectaDensity*DensityUnits/1.673e-24);
   }  // ENDWHILE (too little mass)
 
   /* Don't allow the sphere to be too large (2x leeway) */
@@ -309,7 +310,7 @@ int Star::FindFeedbackSphere(LevelHierarchyEntry *LevelArray[], int level,
   if (SphereContained && FeedbackFlag == FORMATION) {
 
     if (debug) {
-      printf("StarParticle[birth]: L%"ISYM", r = %"GSYM" pc, M = %"GSYM
+      printf("StarParticle[birth]: L%"ISYM", r_influence = %"GSYM" pc, M_enc = %"GSYM
 	     ", Z2/Z3 = %"GSYM"/%"GSYM"\n",
 	     level, Radius*LengthUnits/pc_cm, MassEnclosed, Metallicity2,
 	     Metallicity3);
@@ -323,7 +324,7 @@ int Star::FindFeedbackSphere(LevelHierarchyEntry *LevelArray[], int level,
 	       AvgVelocity[0], AvgVelocity[1], AvgVelocity[2],
 	       vel[0], vel[1], vel[2],
 	       pos[0], pos[1], pos[2]);
-      printf("FindFeedbackSphere[%"ISYM"][%"ISYM"]: Adding sphere for feedback type = %"ISYM"\n", 
+      printf("Star_FindFeedbackSphere[lev=%"ISYM"][Star_id=%"ISYM"]: Adding sphere for feedback type = %"ISYM"\n", 
 	     level, Identifier, FeedbackFlag);
     }
     //if (abs(type) == SimpleSource){

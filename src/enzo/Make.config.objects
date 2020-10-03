@@ -89,6 +89,8 @@ OBJS_CONFIG_LIB = \
         c_message.o \
         colh2diss.o \
         CollapseTestInitialize.o \
+        SFFromDTInitialize.o \
+        Grid_SFFromDTInitializeGrid.o \
         coll_rates.o \
         CommunicationBroadcastValue.o \
         CommunicationBufferedSend.o \

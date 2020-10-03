@@ -69,6 +69,7 @@ int grid::FindNewStarParticles(int level)
 	    NewStar->AssignFinalMass(PopIIIStarMass);
 	if (ParticleType[i] == -PARTICLE_TYPE_SIMPLE_SOURCE) 
 	  NewStar->AssignFinalMass(PopIIIStarMass);
+    if (debug1) printf("Grid_FindNewStarParticles: Assign PopIIIStarMass to particle[id=%d] with type=%d & insert it to the star list of this grid[id=%d]", ParticleNumber[i], ParticleType[i], ID);
 	InsertStarAfter(Stars, NewStar);
 	NumberOfStars++;
       }

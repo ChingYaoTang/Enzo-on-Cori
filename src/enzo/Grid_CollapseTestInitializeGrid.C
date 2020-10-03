@@ -12,6 +12,7 @@
 /
 ************************************************************************/
 
+#include "preincludes.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
@@ -19,6 +20,7 @@
 #include "macros_and_parameters.h"
 #include "typedefs.h"
 #include "global_data.h"
+#include "units.h"
 #include "Fluxes.h"
 #include "GridList.h"
 #include "ExternalBoundary.h"
@@ -122,6 +124,23 @@ int grid::CollapseTestInitializeGrid(int NumberOfSpheres,
     FieldType[NumberOfBaryonFields++] = Velocity2;
   if (GridRank > 2)
     FieldType[NumberOfBaryonFields++] = Velocity3;
+  
+  if (UseMHD) {
+    FieldType[NumberOfBaryonFields++] = Bfield1;
+    FieldType[NumberOfBaryonFields++] = Bfield2;
+    FieldType[NumberOfBaryonFields++] = Bfield3;
+  }
+  if (HydroMethod == MHD_RK){
+    FieldType[NumberOfBaryonFields++] = PhiField;
+    if(UsePoissonDivergenceCleaning)
+      FieldType[NumberOfBaryonFields++] = Phi_pField;
+  }
+  int accel = NumberOfBaryonFields;
+  if (UseDrivingField) {
+    FieldType[NumberOfBaryonFields++] = DrivingField1;
+    FieldType[NumberOfBaryonFields++] = DrivingField2;
+    FieldType[NumberOfBaryonFields++] = DrivingField3;
+  }
   if (MultiSpecies) {
     FieldType[DeNum    = NumberOfBaryonFields++] = ElectronDensity;
     FieldType[HINum    = NumberOfBaryonFields++] = HIDensity;
@@ -146,6 +165,7 @@ int grid::CollapseTestInitializeGrid(int NumberOfSpheres,
   int ColourNum = NumberOfBaryonFields;
   if (SphereUseColour)
     FieldType[NumberOfBaryonFields++] = Metallicity; /* fake it with metals */
+
 
   /* Return if this doesn't concern us. */
 
@@ -176,6 +196,12 @@ int grid::CollapseTestInitializeGrid(int NumberOfSpheres,
     OmegaMatterNow = 1.0;
   }
 
+  int size = 1;
+
+  if (UseDrivingField) {
+  for (int dim_ = 0; dim_ < GridRank; dim_++)
+    size *= GridDimension[dim_];
+  }
   /* Compute NFW profile-info. The parameters are SphereCoreRadius (which is
      the "knee radius") and SphereDensity (the overdensity ar the knee
      radius).  The pressure is computed by integrated the hydro-static
@@ -719,17 +745,17 @@ int grid::CollapseTestInitializeGrid(int NumberOfSpheres,
 
 		  //		float vel = sqrt(PointSourceGravityConstant/drad)/drad;
 
-		  float accel = PointSourceGravityConstant;
+		  float accel_ = PointSourceGravityConstant;
 		  if (PointSourceGravity == 1)
-		    accel = PointSourceGravityConstant/
+		    accel_ = PointSourceGravityConstant/
 		      (POW(drad,3) + POW(PointSourceGravityCoreRadius, 3));
 		  if (PointSourceGravity == 2) {
 		    x1 = drad/PointSourceGravityCoreRadius;
-		    accel = PointSourceGravityConstant*(log(1+x1)-x1/(1+x1))/
+		    accel_ = PointSourceGravityConstant*(log(1+x1)-x1/(1+x1))/
 		      POW(drad, 3);
 		  }
 		
-		  float vel = sqrt(accel);
+		  float vel = sqrt(accel_);
 		
 		  /* Compute velocty: L x r_perp. */
 
@@ -1025,6 +1051,16 @@ int grid::CollapseTestInitializeGrid(int NumberOfSpheres,
 
   } // end loop SetupLoopCount
 
+  if (UseDrivingField) {
+    float PressureUnits_;
+    PressureUnits_ = GlobalDensityUnits*pow(GlobalLengthUnits/GlobalTimeUnits,2); // [P]=[D]*[V]^2
+    printf("DrivenFlowInitialize in CollapseTest(code units) rho:%"FSYM" P:%"FSYM" gamma:%"FSYM" energy:%"FSYM"\n",
+           InitialDensity,
+           (1.0*kboltz*InitialTemperature*GlobalDensityUnits*InitialDensity/(Mu*mh) / PressureUnits_),
+           Gamma,
+           (1.0*kboltz*InitialTemperature*GlobalDensityUnits*InitialDensity/(Mu*mh) / PressureUnits_)
+           /((Gamma-1)*InitialDensity));
+  }
   if (SphereUseParticles && debug)
     printf("CollapseTestInitialize: NumberOfParticles = %"ISYM"\n", 
 	   NumberOfParticles);

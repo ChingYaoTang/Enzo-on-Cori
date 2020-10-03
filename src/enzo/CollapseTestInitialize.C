@@ -16,6 +16,7 @@
 // This routine intializes a new simulation based on the parameter file.
 //
 
+#include "preincludes.h"
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
@@ -24,6 +25,7 @@
 #include "macros_and_parameters.h"
 #include "typedefs.h"
 #include "global_data.h"
+#include "units.h"
 #include "Fluxes.h"
 #include "GridList.h"
 #include "ExternalBoundary.h"
@@ -41,6 +43,8 @@ int RebuildHierarchy(TopGridData *MetaData,
 int GetUnits(float *DensityUnits, float *LengthUnits,
        float *TemperatureUnits, float *TimeUnits,
        float *VelocityUnits, double *MassUnits, FLOAT Time);
+
+void MHDCTSetupFieldLabels();
 
 static float CollapseTestInitialFractionHII   = 1.2e-5;
 static float CollapseTestInitialFractionHeII  = 1.0e-14;
@@ -72,6 +76,15 @@ int CollapseTestInitialize(FILE *fptr, FILE *Outfptr,
   const char *DIIName   = "DII_Density";
   const char *HDIName   = "HDI_Density";
   const char *MetalName = "Metal_Density";
+
+  char *BxName = "Bx";
+  char *ByName = "By";
+  char *BzName = "Bz";
+  char *PhiName = "Phi";
+  char *StochAccel1Name = "x-acceleration";
+  char *StochAccel2Name = "y-acceleration";
+  char *StochAccel3Name = "z-acceleration";
+
 
   /* declarations */
 
@@ -147,6 +160,22 @@ int CollapseTestInitialize(FILE *fptr, FILE *Outfptr,
   for (dim = 0; dim < MAX_DIMENSION; dim++)
     CollapseTestUniformVelocity[dim] = 0;
     CollapseTestWindVelocity[dim] = 0;
+
+  int DrivenFlowAlpha[3]       = {1, 1, 1};       // ratio of domain size to characteristic length
+  int DrivenFlowSeed = 20150418;                  // seed of random number generator
+  float DrivenFlowBandWidth[3] = {1.0, 1.0, 1.0}; // band width (1.0 = maximal)
+  float DrivenFlowAutoCorrl[3] = {1.0, 1.0, 1.0}; // ratio auto-correlation to large-eddy turn-over time scale
+  float DrivenFlowMach[3]      = {1.0, 1.0, 1.0}; // Mach number
+  float DrivenFlowWeight       = 1.0;             // weight of solenoidal components
+
+  float DrivenFlowMagField           = 0.0; // initial magnetic field
+
+  forcing_type DrivenFlowProfile;            //defined in typedefs.h
+  float DrivenFlowDomainLength[3];
+  float DrivenFlowVelocity[3];
+  float SoundSpeed;
+
+
 
   /* read input from file */
 
@@ -267,6 +296,25 @@ int CollapseTestInitialize(FILE *fptr, FILE *Outfptr,
     ret += sscanf(line, "CollapseTestWindVelocity = %"FSYM" %"FSYM" %"FSYM, 
                   &CollapseTestWindVelocity[0],&CollapseTestWindVelocity[1],&CollapseTestWindVelocity[2]);
 
+    ret += sscanf(line, "DrivenFlowProfile = %"ISYM, &DrivenFlowProfile);
+    
+    ret += sscanf(line, "DrivenFlowAlpha = %"ISYM" %"ISYM" %"ISYM, 
+          DrivenFlowAlpha, DrivenFlowAlpha+1, DrivenFlowAlpha+2);
+    ret += sscanf(line, "DrivenFlowSeed = %"ISYM, &DrivenFlowSeed);
+
+    ret += sscanf(line, "DrivenFlowBandWidth = %"FSYM"%"FSYM"%"FSYM, 
+          DrivenFlowBandWidth, DrivenFlowBandWidth+1, DrivenFlowBandWidth+2);
+
+    ret += sscanf(line, "DrivenFlowAutoCorrl = %"FSYM"%"FSYM"%"FSYM, 
+          DrivenFlowAutoCorrl, DrivenFlowAutoCorrl+1, DrivenFlowAutoCorrl+2);
+
+    ret += sscanf(line, "DrivenFlowMach = %"FSYM"%"FSYM"%"FSYM, 
+          DrivenFlowMach, DrivenFlowMach+1, DrivenFlowMach+2);
+
+    ret += sscanf(line, "DrivenFlowWeight = %"FSYM, &DrivenFlowWeight);
+
+    ret += sscanf(line, "DrivenFlowMagField = %"FSYM, &DrivenFlowMagField);
+
 
     /* if the line is suspicious, issue a warning */
 
@@ -275,6 +323,40 @@ int CollapseTestInitialize(FILE *fptr, FILE *Outfptr,
       fprintf(stderr, "warning: the following parameter line was not interpreted:\n%s\n", line);
 
   } // end input from parameter file
+
+  if (UseDrivingField) {
+  if (EquationOfState == 0) {
+      float PressureUnits_;
+      PressureUnits_ = GlobalDensityUnits*pow(GlobalLengthUnits/GlobalTimeUnits,2); // [P]=[D]*[V]^2
+      SoundSpeed = sqrt(Gamma 
+                        * (1.0*kboltz*CollapseTestInitialTemperature
+                           *GlobalDensityUnits
+                           /(Mu*mh)
+                           / PressureUnits_));
+      // P_code = rho*k*T/Mu/mh/P_unit. (Cs_code)^2 = gamma*P_code/rho_code = gamma*rho_unit*k*T/Mu/nh/P_unit 
+  }
+  else
+      SoundSpeed = IsothermalSoundSpeed;
+
+  if ((HydroMethod != MHD_RK) && (HydroMethod != HD_RK) && (HydroMethod != MHD_Li)) {
+      fprintf(stderr,"DrivenFlowInitialize: Only support for MUSCL framework and MHDCT at this point.\n");
+      return FALSE;
+  }
+  // set proper internal unit for magnetic field
+  DrivenFlowMagField /= sqrt(4*pi);
+  
+  
+  /* compute characteristic velocity from speed of sound and Mach numbers */
+
+  for (int dim_ = 0; dim_ < MetaData.TopGridRank; dim_++) {
+    DrivenFlowVelocity[dim_] = DrivenFlowMach[dim_] * SoundSpeed;
+    DrivenFlowDomainLength[dim_] = DomainRightEdge[dim_] - DomainLeftEdge[dim_];
+    if (debug)
+        printf("dim = %"ISYM" vel = %"FSYM" len = %"FSYM"\n",
+          dim_,DrivenFlowVelocity[dim_],DrivenFlowDomainLength[dim_]);
+  }
+  }
+
 
   /* set up grid */
 
@@ -479,6 +561,19 @@ int CollapseTestInitialize(FILE *fptr, FILE *Outfptr,
     }
 
   } // end: if (CollapseTestRefineAtStart)
+  
+  if (UseDrivingField) {
+  /* create a stochasitc forcing object with the specified parameters */
+  Forcing.Init(MetaData.TopGridRank,
+           DrivenFlowProfile,
+           DrivenFlowAlpha,
+           DrivenFlowDomainLength,
+           DrivenFlowBandWidth,
+           DrivenFlowVelocity,
+           DrivenFlowAutoCorrl,
+           DrivenFlowWeight,
+           DrivenFlowSeed);
+  }
 
   /* If there is wind, initialize the exterior */
  
@@ -540,6 +635,21 @@ int CollapseTestInitialize(FILE *fptr, FILE *Outfptr,
   DataLabel[count++] = (char*) Vel1Name;
   DataLabel[count++] = (char*) Vel2Name;
   DataLabel[count++] = (char*) Vel3Name;
+
+  if ( UseMHD ) {
+    DataLabel[count++] = BxName;
+    DataLabel[count++] = ByName;
+    DataLabel[count++] = BzName;
+  }
+  if( HydroMethod == MHD_RK ){
+    DataLabel[count++] = PhiName;
+  }
+  if (UseDrivingField) {
+    MHDCTSetupFieldLabels();
+    DataLabel[count++] = StochAccel1Name;
+    DataLabel[count++] = StochAccel2Name;
+    DataLabel[count++] = StochAccel3Name;
+  }
   if (MultiSpecies) {
     DataLabel[count++] = (char*) ElectronName;
     DataLabel[count++] = (char*) HIName;
@@ -562,6 +672,7 @@ int CollapseTestInitialize(FILE *fptr, FILE *Outfptr,
     DataLabel[count++] = (char*) ColourName;
   if (CollapseTestUseMetals)
     DataLabel[count++] = (char*) MetalName;
+
 
   for (i = 0; i < count; i++)
     DataUnits[i] = NULL;
@@ -636,6 +747,28 @@ int CollapseTestInitialize(FILE *fptr, FILE *Outfptr,
 	      CollapseTestSphereHeIIIFraction[sphere]);
       fprintf(Outfptr, "CollapseTestSphereH2IFraction[%"ISYM"] = %"GOUTSYM"\n", sphere,
 	      CollapseTestSphereH2IFraction[sphere]);
+      
+      
+      fprintf(Outfptr, "Profile    = %"ISYM"\n\n", DrivenFlowProfile);
+
+      fprintf(Outfptr, "Alpha1     = %"ISYM"\n",   DrivenFlowAlpha[0]);
+      fprintf(Outfptr, "Alpha2     = %"ISYM"\n",   DrivenFlowAlpha[1]);
+      fprintf(Outfptr, "Alpha3     = %"ISYM"\n\n", DrivenFlowAlpha[2]);
+
+      fprintf(Outfptr, "BandWidth1 = %"FSYM"\n",   DrivenFlowBandWidth[0]);
+      fprintf(Outfptr, "BandWidth2 = %"FSYM"\n",   DrivenFlowBandWidth[1]);
+      fprintf(Outfptr, "BandWidth3 = %"FSYM"\n\n", DrivenFlowBandWidth[2]);
+
+      fprintf(Outfptr, "AutoCorrl1 = %"FSYM"\n",   DrivenFlowAutoCorrl[0]);
+      fprintf(Outfptr, "AutoCorrl2 = %"FSYM"\n",   DrivenFlowAutoCorrl[1]);
+      fprintf(Outfptr, "AutoCorrl3 = %"FSYM"\n\n", DrivenFlowAutoCorrl[2]);
+
+      fprintf(Outfptr, "SolnWeight = %"FSYM"\n\n", DrivenFlowWeight);
+
+      fprintf(Outfptr, "Velocity1  = %"FSYM"\n",   DrivenFlowVelocity[0]);
+      fprintf(Outfptr, "Velocity2  = %"FSYM"\n",   DrivenFlowVelocity[1]);
+      fprintf(Outfptr, "Velocity3  = %"FSYM"\n\n", DrivenFlowVelocity[2]);
+
     }
   }
 

@@ -2172,6 +2172,10 @@ int zEulerSweep(int j, int NumberOfSubgrids, fluxes *SubgridFluxes[],
 			     float CollapseTestInitialFractionH2I, 
 			     float CollapseTestInitialFractionH2II);
 
+/* SFFromDT: initialize grid. */
+
+  int SFFromDTInitializeGrid(char *SFFromDTFile);
+
 
 /* Cluster: initialize grid. */
 

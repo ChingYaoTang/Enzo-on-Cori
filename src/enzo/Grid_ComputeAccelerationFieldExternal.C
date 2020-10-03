@@ -207,6 +207,8 @@ int grid::ComputeAccelerationFieldExternal()
                 GravConst*(ClusterSMBHBCG*SolarMass*1.0e11)/POW(radius*LengthUnits+EllipticalGalaxyRe*1.0e-3*Mpc_cm/1.8153, 2)/AccelUnits +
                 GravConst*SolarMass*ClusterSMBHMass/POW(radius*LengthUnits - 2.0*GravConst*SolarMass/POW(clight,2), 2)/ AccelUnits;
                  }
+              } else {
+                 accel = GravConst*PointSourceGravityConstant*MassUnitsDouble*((log(1.0+x )-x /(1.0+x )) /(log(1.0+1.0)-1.0/(1.0+1.0))) /POW(radius*LengthUnits, 2.0) / AccelUnits;
               }
               accel = accel/radius;  // this radius normalizes the multiplication by
 	      // xpos,ypos,zpos done below

@@ -59,6 +59,10 @@ void grid::RemoveMergedParticles(ParticleEntry *List, const int &Size, int *Flag
 	  else 
 	    ParticleMass[i] = tiny_number;	  
 	  ParticleType[i] = PARTICLE_TYPE_DARK_MATTER;
+      // This function has been called for SinkParticle star particle creation method
+      if (debug1)
+        printf("Grid_ReturnParticleEntry->RemoveMergedParticles(): Particle[%d] with id[%d] has been removed to type[%d] with mass[%e]\n",
+                                                   i, ParticleType[i], ParticleMass[i]);
 	}
       }
       

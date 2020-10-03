@@ -177,8 +177,16 @@ int StarParticleAddFeedback(TopGridData *MetaData,
        (1) sphere is not contained, or 
        (2) sphere is contained, but the next level can contain the sphere, too. */ 
     if ((SphereContained == FALSE) ||
-	(SphereContained == TRUE && SphereContainedNextLevel == TRUE))
+	(SphereContained == TRUE && SphereContainedNextLevel == TRUE)){
+      if (debug1) {
+        printf("StarParticleAddFeedback[lev=%d]: Skip the particle[id=%d] in lev=%d with mass=%e, type=%d because FB sphere is", level, cstar->ReturnID(), cstar->ReturnLevel(), cstar->ReturnMass(), cstar->ReturnType());
+        if (SphereContained == FALSE)
+          printf("not contained.\n");
+        else if (SphereContained == TRUE && SphereContainedNextLevel == TRUE)
+          printf("contained, but the next level can contain the sphere, too.\n");
+      }
       continue;
+    }
 
     } // ENDIF SphereCheck
     else {
@@ -272,7 +280,7 @@ int StarParticleAddFeedback(TopGridData *MetaData,
 	fprintf(stdout, "StarParticleAddFeedback[%"ISYM"][%"ISYM"]: "
 		"Energy = %"GSYM"  , skip = %"ISYM"\n",
 		cstar->ReturnID(), level, EjectaThermalEnergy, SkipMassRemoval);
-      fprintf(stdout, "StarParticleAddFeedback[%"ISYM"][%"ISYM"]: "
+      fprintf(stdout, "StarParticleAddFeedback[star_id=%"ISYM"][lev=%"ISYM"]: "
 	      "changed %"ISYM" cells.  AddedFeedback[%d] = %d\n", 
 	      cstar->ReturnID(), level, CellsModified, 
 	      count, AddedFeedback[count]);

@@ -78,7 +78,9 @@ int ActiveParticleType_PopIII::EvaluateFormation
 	if (supp_data.NumberOfNewParticles >=
 	    supp_data.MaxNumberOfNewParticles)
           continue;
-	
+    //printf("NOP_pop3=%d\n",supp_data.NumberOfNewParticles);
+    //printf("MNOP_pop3=%d\n",supp_data.MaxNumberOfNewParticles);
+
 	// 1. Finest level of refinement
 	if (tg->BaryonField[tg->NumberOfBaryonFields][index] != 0.0) 
 	  continue;
@@ -110,6 +112,8 @@ int ActiveParticleType_PopIII::EvaluateFormation
 	if (tdyn < supp_data.CoolingTime[index] && 
 	    supp_data.Temperature[index] > 1.1e4)
 	  continue;
+    //printf("tdyn_pop3=%e\n",tdyn);
+    //printf("tcool_pop3=%e\n",supp_data.CoolingTime[index]);
 
 	// 5. If metallicity is greater than the critical metallicity
 	if (HasMetalField && 

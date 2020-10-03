@@ -245,7 +245,7 @@ int GetUnits(float *DensityUnits, float *LengthUnits,
 	     float *TemperatureUnits, float *TimeUnits,
 	     float *VelocityUnits, double *MassUnits, FLOAT Time);
 
-
+int SFFromDTInitialize(FILE *fptr, FILE *Outfptr, HierarchyEntry &TopGrid, TopGridData &MetaData);
  
 // Character strings
  
@@ -746,6 +746,10 @@ int InitializeNew(char *filename, HierarchyEntry &TopGrid,
     ret = CurrentProblemType->InitializeSimulation(fptr, Outfptr, TopGrid, MetaData);
   }
 #endif
+
+  // 999)
+  if (ProblemType == 999)
+    ret = SFFromDTInitialize(fptr, Outfptr, TopGrid, MetaData);
 
   // Insert new problem intializer here...
 

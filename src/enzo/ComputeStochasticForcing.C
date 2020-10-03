@@ -33,9 +33,9 @@ int ComputeStochasticForcing(TopGridData *MetaData,
   /* Compute vector components of the force field in succession. */
 
   for (grid = 0; grid < NumberOfGrids; grid++) {
-      if (debug) cout << "ComputeStochasticForcing: computing phase factors for grid " << grid << endl;
+      if (debug2) cout << "ComputeStochasticForcing: computing phase factors for grid " << grid << endl;
       Grids[grid]->GridData->Phases();
-      if (debug) cout << "ComputeStochasticForcing: computing force field for grid " << grid << endl;
+      if (debug2) cout << "ComputeStochasticForcing: computing force field for grid " << grid << endl;
       for (int dim = 0; dim < MetaData->TopGridRank; dim++)
       if (Grids[grid]->GridData->FTStochasticForcing(dim) == FAIL) {
           fprintf(stderr, "Error in grid->FTStochasticForcing\n");

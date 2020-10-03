@@ -87,9 +87,9 @@
       allocate( wsave(3*n/2) ) 
       
       isign = 0
-      call zfft1d( x, n, isign, wsave )
+!!      call zfft1d( x, n, isign, wsave )
       isign = idir
-      call zfft1d( x, n, isign, wsave )
+!!      call zfft1d( x, n, isign, wsave )
 
       deallocate( wsave )
 

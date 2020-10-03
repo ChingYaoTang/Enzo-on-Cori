@@ -765,6 +765,7 @@ int grid::StarParticleHandler(HierarchyEntry* SubgridPointer, int level,
     /* Allocate space for new particles. */
  
     int MaximumNumberOfNewParticles = int(0.25*float(size)) + 5;
+    //printf("MNONP = %d\n",int(0.25*float(size)) + 5);
     tg->AllocateNewParticles(MaximumNumberOfNewParticles);
  
     /* Compute the cooling time. */
@@ -949,6 +950,15 @@ int grid::StarParticleHandler(HierarchyEntry* SubgridPointer, int level,
 	 tg->ParticleAttribute[1], tg->ParticleAttribute[0], 
 	 tg->ParticleAttribute[2], tg->ParticleType, &SingleStarType, 
 	 &RadiationData.IntegratedStarFormation, &RadiativeTransfer);
+
+    if (debug1)
+    if (NumberOfNewParticles>0){
+      printf("Grid_StarParticleHandler: # of new pop3 particles in grid[id=%d] = %d\n", this->ID, NumberOfNewParticles);
+      for (int pcount=0; pcount<NumberOfNewParticles; pcount++){
+          printf("New Pop3 particle No.%d: id = %d, mass = %e, type = %d, dyn time = %e\n", pcount, tg->ParticleNumber[pcount], tg->ParticleMass[pcount], tg->ParticleType[pcount], tg->ParticleAttribute[1][pcount]);
+      }
+      printf("cooling time of pop3 particles = %e\n", cooling_time);
+    }
 
     }
 
@@ -1433,8 +1443,8 @@ int grid::StarParticleHandler(HierarchyEntry* SubgridPointer, int level,
  
     if (NumberOfNewParticles > 0) {
  
-      if (debug)
-	printf("Grid_StarParticleHandler: New StarParticles = %"ISYM"\n", NumberOfNewParticles);
+      if (debug1)
+	printf("Grid_StarParticleHandler(After pop3_maker): # of New StarParticles = %"ISYM"\n", NumberOfNewParticles);
  
       /* Set the particle numbers.  The correct indices will be assigned in 
 	 CommunicationUpdateStarParticleCount in StarParticleFinalize later.*/
@@ -1452,6 +1462,13 @@ int grid::StarParticleHandler(HierarchyEntry* SubgridPointer, int level,
       this->MoveAllParticles(1, &tg);
  
     } // end: if (NumberOfNewParticles > 0)
+
+    if (debug1)
+    if (NumberOfNewParticles>0){
+      printf("Grid_StarParticleHandler(After move all particles): # of total particles in grid[id=%d] with size(%d,%d,%d) = %d\n", this->ID, this->GridDimension[0], this->GridDimension[1], this->GridDimension[2], NumberOfParticles);
+      for (int pcount=0; pcount<NumberOfParticles; pcount++)
+          printf("Pop3 particle No.%d: id = %d, mass = %e, type = %d\n", pcount, this->ParticleNumber[pcount], this->ParticleMass[pcount], this->ParticleType[pcount]);
+    }
 
     /* Clean up and keep it quiet. */
 
