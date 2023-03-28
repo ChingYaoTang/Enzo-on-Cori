@@ -325,6 +325,7 @@ int CollapseTestInitialize(FILE *fptr, FILE *Outfptr,
   } // end input from parameter file
 
   if (UseDrivingField) {
+  //printf("CollapseTestInitialize: T = %e \n",CollapseTestInitialTemperature);
   if (EquationOfState == 0) {
       float PressureUnits_;
       PressureUnits_ = GlobalDensityUnits*pow(GlobalLengthUnits/GlobalTimeUnits,2); // [P]=[D]*[V]^2
@@ -333,15 +334,15 @@ int CollapseTestInitialize(FILE *fptr, FILE *Outfptr,
                            *GlobalDensityUnits
                            /(Mu*mh)
                            / PressureUnits_));
-      // P_code = rho*k*T/Mu/mh/P_unit. (Cs_code)^2 = gamma*P_code/rho_code = gamma*rho_unit*k*T/Mu/nh/P_unit 
+      // P_code = rho*k*T/Mu/mh/P_unit. (Cs_code)^2 = gamma*P_code/rho_code = gamma*rho_unit*k*T/Mu/mh/P_unit 
   }
   else
       SoundSpeed = IsothermalSoundSpeed;
 
-  if ((HydroMethod != MHD_RK) && (HydroMethod != HD_RK) && (HydroMethod != MHD_Li)) {
-      fprintf(stderr,"DrivenFlowInitialize: Only support for MUSCL framework and MHDCT at this point.\n");
-      return FALSE;
-  }
+  //if ((HydroMethod != MHD_RK) && (HydroMethod != HD_RK) && (HydroMethod != MHD_Li)) {
+  //    fprintf(stderr,"DrivenFlowInitialize: Only support for MUSCL framework and MHDCT at this point.\n");
+  //    return FALSE;
+  //}
   // set proper internal unit for magnetic field
   DrivenFlowMagField /= sqrt(4*pi);
   

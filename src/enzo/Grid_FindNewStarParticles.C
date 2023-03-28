@@ -65,11 +65,13 @@ int grid::FindNewStarParticles(int level)
 	   calls to the IMF. */
 
 	if (ParticleType[i] == -PARTICLE_TYPE_SINGLE_STAR)
-	  if (PopIIIInitialMassFunction == FALSE)
-	    NewStar->AssignFinalMass(PopIIIStarMass);
-	if (ParticleType[i] == -PARTICLE_TYPE_SIMPLE_SOURCE) 
+	  if (PopIIIInitialMassFunction == FALSE){
+	    NewStar->AssignFinalMass(PopIIIStarMass);	
+        if (debug2) 
+            printf("Grid_FindNewStarParticles: Assign FinalMass %e Msun to particle[star_id=%d, star_type=%d, star_mass=%e Msun] & insert it to the star list of this grid[id=%d]\n", NewStar->FinalMass,NewStar->Identifier, NewStar->type, NewStar->Mass, ID);
+      }
+    if (ParticleType[i] == -PARTICLE_TYPE_SIMPLE_SOURCE) 
 	  NewStar->AssignFinalMass(PopIIIStarMass);
-    if (debug1) printf("Grid_FindNewStarParticles: Assign PopIIIStarMass to particle[id=%d] with type=%d & insert it to the star list of this grid[id=%d]", ParticleNumber[i], ParticleType[i], ID);
 	InsertStarAfter(Stars, NewStar);
 	NumberOfStars++;
       }

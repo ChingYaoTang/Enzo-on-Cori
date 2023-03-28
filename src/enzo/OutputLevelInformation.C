@@ -15,7 +15,7 @@
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
-
+#include <math.h>
 
 #include "ErrorExceptions.h"
 #include "macros_and_parameters.h"
@@ -184,10 +184,15 @@ int OutputLevelInformation(FILE *fptr, TopGridData &MetaData,
   for (level = 0; level <= MaximumRefinementLevel; level++) {
 
     if (isRoot) {
-      fprintf(fptr, "  Level %"ISYM"  Grids %"ISYM"  Memory(MB) %"GSYM"  Coverage %"GSYM"  Ratio %"GSYM"  Flagged %"GSYM"  Active %lld\n",
+      fprintf(fptr, "  Level %"ISYM"  Grids %"ISYM"  Memory(MB) %"GSYM"  Coverage %"GSYM"  Ratio %"GSYM"  Flagged %"GSYM"  Active %lld OverDensity = %"GSYM"\n",
       level, Grids[level], float(Memory[level])/1.049e6,
       Coverage[level], MeanAxialRatio[level], FractionFlagged[level],
-      CellsActive[level]);
+      CellsActive[level],
+      POW(MetaData.TopGridDims[0],3) * POW(8,level) * MinimumMassForRefinement[0] *
+//      (MinimumMassForRefinementLevelExponent[0]*(log10(level+1e1)-1) +1) * POW(8,-level)
+//      POW(log(level + exp(1.0)), MinimumMassForRefinementLevelExponent[0]) * POW(8,-level)
+      POW(RefineBy, level*MinimumMassForRefinementLevelExponent[0])
+      );
     }
 
 #ifdef USE_LCAPERF

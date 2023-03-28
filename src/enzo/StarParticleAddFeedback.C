@@ -147,8 +147,16 @@ int StarParticleAddFeedback(TopGridData *MetaData,
 	((cstar->ReturnFeedbackFlag() == MBH_THERMAL ||
 	  cstar->ReturnFeedbackFlag() == MBH_JETS) &&
 	 (influenceRadius >= RootCellWidth/2 || 
-	  EjectaThermalEnergy <= tiny_number)) )
+	  EjectaThermalEnergy <= tiny_number)) ) {
+      if (debug1) {
+        printf("StarParticleAddFeedback[lev=%d](1): Skip the particle at (%e,%e,%e) [id=%d, lev=%d, mass=%e, type=%d] because FB sphere ", level, *(cstar->ReturnPosition()) * LengthUnits / pc_cm, *(cstar->ReturnPosition()+1) * LengthUnits / pc_cm, *(cstar->ReturnPosition()+2) * LengthUnits / pc_cm, cstar->ReturnID(), cstar->ReturnLevel(), cstar->ReturnMass(), cstar->ReturnType());
+        if (SphereContained == FALSE)
+          printf("is not contained (%e pc).\n",influenceRadius * LengthUnits / pc_cm);
+        else if (influenceRadius <= tiny_number)
+          printf("has a tiny R_influ.\n");
+      }
       continue;
+    }
 
     /* Determine if a sphere is enclosed within the grids on next level
        If that is the case, we perform AddFeedbackSphere not here, 
@@ -179,9 +187,9 @@ int StarParticleAddFeedback(TopGridData *MetaData,
     if ((SphereContained == FALSE) ||
 	(SphereContained == TRUE && SphereContainedNextLevel == TRUE)){
       if (debug1) {
-        printf("StarParticleAddFeedback[lev=%d]: Skip the particle[id=%d] in lev=%d with mass=%e, type=%d because FB sphere is", level, cstar->ReturnID(), cstar->ReturnLevel(), cstar->ReturnMass(), cstar->ReturnType());
+        printf("StarParticleAddFeedback[lev=%d](2): Skip the particle at (%e,%e,%e) [id=%d, lev=%d, mass=%e, type=%d] because FB sphere is", level+1, *(cstar->ReturnPosition()) * LengthUnits / pc_cm, *(cstar->ReturnPosition()+1) * LengthUnits / pc_cm, *(cstar->ReturnPosition()+2) * LengthUnits / pc_cm, cstar->ReturnID(), cstar->ReturnLevel(), cstar->ReturnMass(), cstar->ReturnType());
         if (SphereContained == FALSE)
-          printf("not contained.\n");
+          printf("not contained (%e pc).\n",influenceRadius * LengthUnits / pc_cm);
         else if (SphereContained == TRUE && SphereContainedNextLevel == TRUE)
           printf("contained, but the next level can contain the sphere, too.\n");
       }
@@ -286,7 +294,14 @@ int StarParticleAddFeedback(TopGridData *MetaData,
 	      count, AddedFeedback[count]);
     }
 #endif
-    
+/*    if (debug) {
+      if (cstar->ReturnFeedbackFlag() == FORMATION)
+        fprintf(stdout, "StarParticleAddFeedback[star_id=%"ISYM"][lev=%"ISYM"]: "
+          "changed %"ISYM" cells.  AddedFeedback[%d] = %d\n",
+          cstar->ReturnID(), level, CellsModified,
+          count, AddedFeedback[count]);
+    }
+*/    
   } // ENDFOR stars
 
   LCAPERF_STOP("StarParticleAddFeedback");

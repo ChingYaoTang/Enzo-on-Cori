@@ -116,8 +116,9 @@ int StarParticleInitialize(HierarchyEntry *Grids[], TopGridData *MetaData,
     cstar->MirrorToParticle();
   }
 
-  if (debug1){
+  if (debug2 && MetaData->NumberOfParticles>0){
     fprintf(stdout, "\nin StarParticleInitialize.C \n"); 
+    fprintf(stdout, "Time now = %e TimeUnits\n", TimeNow);
     fprintf(stdout, "MetaData->NumberOfParticles = %d\n", MetaData->NumberOfParticles); 
     fprintf(stdout, "NumberOfStarParticles now = %d\n", NumberOfStarParticles);
     fprintf(stdout, "NumberOfOtherParticles now = %d\n", NumberOfOtherParticles);

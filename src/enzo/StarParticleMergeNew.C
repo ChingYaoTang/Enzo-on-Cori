@@ -94,9 +94,9 @@ int StarParticleMergeNew(LevelHierarchyEntry *LevelArray[], Star *&AllStars)
 	if (ThisStar->Separation2(*OtherStar) <= rmerge2) {
 	  ThisStar->Merge(OtherStar);
 	  OtherStar->MarkForDeletion();
-      if (debug1)
-        printf("(1)Merging stars %"ISYM" and %"ISYM" (distance=%e)\n", ThisStar->ReturnID(),
-		      OtherStar->ReturnID(), ThisStar->Separation2(*OtherStar));
+      if (debug2)
+        printf("(1)Merging stars %"ISYM" and %"ISYM" (due to distance=%e < rmerge=%e))\n", ThisStar->ReturnID(),
+		      OtherStar->ReturnID(), sqrt(ThisStar->Separation2(*OtherStar)), sqrt(rmerge2));
 	} // ENDIF radius2 < rmerge2
     } // ENDFOR OtherStar
   } // ENDFOR ThisStar
@@ -138,9 +138,9 @@ int StarParticleMergeNew(LevelHierarchyEntry *LevelArray[], Star *&AllStars)
 	    // Delete the unborn one.
 	    if (ThisStar ->IsUnborn()) ThisStar ->MarkForDeletion();
 	    if (OtherStar->IsUnborn()) OtherStar->MarkForDeletion();
-        if (debug1)
-          printf("(2)Merging stars %"ISYM" and %"ISYM" (distance=%e)\n", ThisStar->ReturnID(),
-                OtherStar->ReturnID(), OtherStar->Separation2(*ThisStar));
+        if (debug2)
+          printf("(2)Merging stars %"ISYM" and %"ISYM" (due to distance=%e < rmerge=%e)\n", ThisStar->ReturnID(),
+                OtherStar->ReturnID(), sqrt(OtherStar->Separation2(*ThisStar)), sqrt(rmerge2));
 
 	  } // ENDIF close
 	} // ENDIF OtherStar Pop III

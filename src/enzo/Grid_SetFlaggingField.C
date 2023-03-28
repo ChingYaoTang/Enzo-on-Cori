@@ -303,8 +303,8 @@ int grid::SetFlaggingField(int &NumberOfFlaggedCells, int level)
  
 	  }
 
-      if (debug1 && NumberOfFlaggedCells > 0)
-	printf("SetFlaggingField[method = %"ISYM"]: NumberOfFlaggedCells = %"ISYM".\n",
+      if (debug2 && NumberOfFlaggedCells > 0)
+	printf("Grid_SetFlaggingField:[method = %"ISYM"]: NumberOfFlaggedCells = %"ISYM".\n",
 	       CellFlaggingMethod[method], NumberOfFlaggedCells);
     } 
   } // ENDFOR methods

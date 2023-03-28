@@ -76,7 +76,7 @@ int Star::FindFeedbackSphere(LevelHierarchyEntry *LevelArray[], int level,
       (StarType == PopIII && FeedbackFlag == FORMATION &&
        Mass >= this->FinalMass)) {
     if (debug)
-      printf("Star_FindFeedbackSphere: Skip StarParticle[%"ISYM"] with mass = %"GSYM" Msun.\n", Identifier, Mass);
+      printf("Star_FindFeedbackSphere: Skip StarParticle[star_id=%"ISYM"] because it has enough mass(= %"GSYM" Msun).\n", Identifier, Mass);
     SkipMassRemoval = TRUE;
     return SUCCESS;
   }
@@ -117,6 +117,7 @@ int Star::FindFeedbackSphere(LevelHierarchyEntry *LevelArray[], int level,
 
     SphereContained = this->SphereContained(LevelArray, level, Radius);
     if (SphereContained == FALSE)
+        //printf("Star_FindFeedbackSphere[lev=%d][star_id=%d,star_lev=%d]: sphere contained false => Radius = %e pc)\n", level, Identifier, this->level,Radius * LengthUnits / pc_cm);
       break;
 
     ShellMass = 0;
@@ -192,6 +193,7 @@ int Star::FindFeedbackSphere(LevelHierarchyEntry *LevelArray[], int level,
 
     if (MassEnclosed == 0) {
       SphereContained = FALSE;
+      printf("MassEnclosed=0");
       return SUCCESS;
     }
 
@@ -264,11 +266,12 @@ int Star::FindFeedbackSphere(LevelHierarchyEntry *LevelArray[], int level,
 
       //      printf("AddFeedback: EjectaDensity = %"GSYM"\n", EjectaDensity);
       //      EjectaDensity = Shine[p].Mass / MassEnclosed;
-    if (debug1)
-      printf("Star_FindFeedbackSphere[lev=%d][Star_id=%d]: AccretedMass = %e Msun, EjectaDensity = %e H/cc\n)", level, Identifier, AccretedMass, EjectaDensity*DensityUnits/1.673e-24);
   }  // ENDWHILE (too little mass)
 
-  /* Don't allow the sphere to be too large (2x leeway) */
+  if (debug1 && SphereContained)
+    printf("Star_FindFeedbackSphere[lev=%d][star_id=%d,star_lev=%d]: at (%e,%e,%e) with R = %e pc, Menc = %e Msun, AccretedMass = %e Msun, EjectaDensity = %e H/cc)\n", level, Identifier, this->level,  *(this->ReturnPosition()) * LengthUnits / pc_cm, *(this->ReturnPosition()+1) * LengthUnits / pc_cm, *(this->ReturnPosition()+2) * LengthUnits / pc_cm, Radius * LengthUnits / pc_cm, MassEnclosed, AccretedMass, EjectaDensity*DensityUnits/1.673e-24);
+
+/* Don't allow the sphere to be too large (2x leeway) */
 
   const float epsMass = 9.0;
   float eps_tdyn;
@@ -310,7 +313,7 @@ int Star::FindFeedbackSphere(LevelHierarchyEntry *LevelArray[], int level,
   if (SphereContained && FeedbackFlag == FORMATION) {
 
     if (debug) {
-      printf("StarParticle[birth]: L%"ISYM", r_influence = %"GSYM" pc, M_enc = %"GSYM
+      printf("Star_FindFeedbackSphere: StarParticle[birth]: L%"ISYM", r_influence = %"GSYM" pc, M_enc = %"GSYM
 	     ", Z2/Z3 = %"GSYM"/%"GSYM"\n",
 	     level, Radius*LengthUnits/pc_cm, MassEnclosed, Metallicity2,
 	     Metallicity3);
@@ -324,8 +327,8 @@ int Star::FindFeedbackSphere(LevelHierarchyEntry *LevelArray[], int level,
 	       AvgVelocity[0], AvgVelocity[1], AvgVelocity[2],
 	       vel[0], vel[1], vel[2],
 	       pos[0], pos[1], pos[2]);
-      printf("Star_FindFeedbackSphere[lev=%"ISYM"][Star_id=%"ISYM"]: Adding sphere for feedback type = %"ISYM"\n", 
-	     level, Identifier, FeedbackFlag);
+      printf("Star_FindFeedbackSphere[lev=%"ISYM"][star_id=%"ISYM", star_lev=%d]: Adding sphere for feedback type = %"ISYM"\n", 
+	     level, Identifier, this->level, FeedbackFlag);
     }
     //if (abs(type) == SimpleSource){
     //  EjectaDensity = (float) 
@@ -375,6 +378,16 @@ int Star::FindFeedbackSphere(LevelHierarchyEntry *LevelArray[], int level,
     this->accretion_time = new FLOAT[2];
     this->accretion_time[0] = 0.0;
     this->accretion_time[1] = Time;
+
+    fprintf(stdout, "Star_FindFeedbackSphere:  accretion_rate = %"GOUTSYM
+        " SolarMass/yr, current grid time = %"GOUTSYM" yrs, "
+        "accretion_time[0] = %"GOUTSYM" yrs, this_dt = %"GOUTSYM
+        " yrs, DeltaMass = %"GOUTSYM" Msun, Mass = %lf Msun\n",
+        this->accretion_rate[0]*yr_s, 
+        CurrentGrid->Time*TimeUnits/yr_s, 
+        this->accretion_time[0]*TimeUnits/yr_s, 
+        this->accretion_time[1]*TimeUnits/yr_s,
+        DeltaMass, Mass);
 
     //DeltaMass = AccretedMass;
     //type = abs(type);  // Unmark as unborn (i.e. negative type)

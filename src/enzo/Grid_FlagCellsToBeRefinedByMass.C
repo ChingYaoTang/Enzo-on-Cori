@@ -60,8 +60,10 @@ int grid::FlagCellsToBeRefinedByMass(int level, int method, int RestrictFlag)
   /* Compute the ModifiedMinimumMass */
  
   float ModifiedMinimumMassForRefinement =
-    MinimumMassForRefinement[method]*POW(RefineBy,
-		    level*MinimumMassForRefinementLevelExponent[method]);
+    MinimumMassForRefinement[method]*
+//      (MinimumMassForRefinementLevelExponent[method]*(log10(level+1e1)-1) +1) * POW(8, -level); //1
+//      POW(log(level + exp(1.0)), MinimumMassForRefinementLevelExponent[method]) * POW(8, -level); //2
+      POW(RefineBy, level*MinimumMassForRefinementLevelExponent[method]); //3
   if (ProblemType == 28)
     ModifiedMinimumMassForRefinement = 0;
  

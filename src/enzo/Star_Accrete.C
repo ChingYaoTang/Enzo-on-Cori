@@ -60,7 +60,8 @@ int Star::Accrete(void)
   double old_mass = Mass;
   Mass += (double)(DeltaMass);
 //  FinalMass += (double)(DeltaMass);
-//  printf("star::Accrete: new_Mass = %lf, DeltaMass = %f\n", Mass, DeltaMass); 
+  if (debug1)
+    printf("Star_Accrete: Star[star_id=%d, star_type=%d, star_lev=%d, FB flag=%d] new_Mass = %lf, DeltaMass = %f, old_mass = %e\n", Identifier, type, level, FeedbackFlag, Mass, DeltaMass, Mass-(double)(DeltaMass)); 
 
 
   /* Conserve momentum: change star particle velocity due to accreted material */
@@ -106,12 +107,12 @@ int Star::Accrete(void)
   /* Keep the last accretion_rate for future use */
 
   if (n > 0)  last_accretion_rate = accretion_rate[n-1]; 
-
-  fprintf(stdout, "star::Accrete:  last_accretion_rate = %"GOUTSYM
-	  " SolarMass/yr, time = %"GOUTSYM", "
-	  "accretion_time[0] = %"GOUTSYM", this_dt = %"GOUTSYM
-	  ", DeltaMass = %"GOUTSYM", Mass = %lf\n",
-	  last_accretion_rate*yr_s, time, accretion_time[0], this_dt, DeltaMass, Mass);
+  if (debug2)
+    fprintf(stdout, "star::Accrete:  last_accretion_rate = %"GOUTSYM
+	  " SolarMass/yr, current grid time = %"GOUTSYM" yrs, "
+	  "accretion_time[0] = %"GOUTSYM" yrs, this_dt = %"GOUTSYM
+	  " yrs, DeltaMass = %"GOUTSYM" Msun, Mass = %lf Msun\n",
+	  last_accretion_rate*yr_s, time*TimeUnits/yr_s, accretion_time[0]*TimeUnits/yr_s, this_dt*TimeUnits/yr_s, DeltaMass, Mass);
 
   /* Remove these entries in the accretion table */
 

@@ -47,7 +47,7 @@ int ProtoSubgrid::CleanUp()
   /* Compute efficiency & report. */
  
   int i;
-  if (debug1) {
+  if (debug2) {
     printf("ProtoSubgrid: efficiency = %6.1"FSYM"%% (%"ISYM"/%"ISYM") dims=",
 	   float(NumberFlagged)/float(size)*100.0, NumberFlagged, size);
     for (i = 0; i < GridRank; i++)

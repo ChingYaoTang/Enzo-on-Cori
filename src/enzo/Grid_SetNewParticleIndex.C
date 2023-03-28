@@ -36,9 +36,9 @@ void grid::SetNewParticleIndex(int &NumberCount1, PINT &NumberCount2)
 	ParticleNumber[n] = NumberCount1++ + NumberCount2;
       else 
 	ParticleNumber[n] = NumberCount1 + NumberCount2++;
-      if (debug1)
-        printf("New star particle index = %d (%d %d)\n",
-	     ParticleNumber[n], NumberCount1, NumberCount2);
+      if (debug2)
+        printf("Grid_SetNewParticleIndex:New star particle index = %d (Star=%d: Other=%d) in grid[id=%d]\n",
+	     ParticleNumber[n], NumberCount1, NumberCount2, this->ID);
     }
   return;
 }

@@ -38,9 +38,9 @@ int grid::RemoveParticle(int ID, bool disable)
       if (disable) {
 	ParticleType[i] = PARTICLE_TYPE_DARK_MATTER;
 	ParticleMass[i] = tiny_number;
-    if (debug1)
-        printf("Grid_RemoveParticle(ID=%d): Particle[%d] in grid[id=%d,lev=%d] with id=%d has been removed to type[%d] with mass[%e]\n",
-                                                   ID , this->ID, this->GridLevel, i, this->ParticleNumber[i], this->ParticleType[i], this->ParticleMass[i]); 
+    if (debug2)
+        printf("Grid_RemoveParticle(ID=%d): Particle[id=%d] in grid[id=%d,lev=%d] has been removed to type[%d] with mass[%e]\n",
+                                                   ID, this->ParticleNumber[i], this->ID, this->GridLevel, this->ParticleType[i], this->ParticleMass[i]); 
       } else
 	ParticleMass[i] = FLOAT_UNDEFINED;
       found = TRUE;

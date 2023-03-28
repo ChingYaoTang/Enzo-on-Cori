@@ -147,6 +147,7 @@ int grid::ComputePressure(FLOAT time, float *pressure,
 	  }
 
 	  pressure[i] = (Gamma - 1.0)*density*gas_energy;
+      //printf("Grid_ComputePressure(no interpolate): GE[%d] = %e \n", i, gas_energy);
 
 	  if (pressure[i] < tiny_number)
 	    pressure[i] = tiny_number;
@@ -227,6 +228,7 @@ int grid::ComputePressure(FLOAT time, float *pressure,
 
 	
 	  pressure[i] = (Gamma - 1.0)*density*gas_energy;
+      //printf("Grid_ComputePressure(general): GE[%d] = %e \n", i, gas_energy);
 	
 	  if (pressure[i] < tiny_number)
 	    pressure[i] = tiny_number;
@@ -300,6 +302,7 @@ int grid::ComputePressure(FLOAT time, float *pressure,
       /* Correct pressure with improved Gamma. */
  
       pressure[i] *= (Gamma1 - 1.0)/(Gamma - 1.0);
+      //printf("Grid_ComputePressure(general): P[%d] = %e \n", i, pressure[i]);
  
     } // end: loop over i
  

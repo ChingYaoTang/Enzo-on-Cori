@@ -179,7 +179,7 @@ int grid::CollapseTestInitializeGrid(int NumberOfSpheres,
   /* Set various units. */
 
   float DensityUnits, LengthUnits, TemperatureUnits, TimeUnits, 
-    VelocityUnits, CriticalDensity = 1, BoxLength = 1, mu = 0.6;
+    VelocityUnits, CriticalDensity = 1, BoxLength = 1, mu = 1.219512;
 
   FLOAT a, dadt, ExpansionFactor = 1;
   GetUnits(&DensityUnits, &LengthUnits, &TemperatureUnits, &TimeUnits, 
@@ -985,8 +985,9 @@ int grid::CollapseTestInitializeGrid(int NumberOfSpheres,
 	    BaryonField[ivel+dim][n] = Velocity[dim] + UniformVelocity[dim];
 
 	  /* Set energy (thermal and then total if necessary). */
-
 	  BaryonField[1][n] = temperature/TemperatureUnits/ ((Gamma-1.0)*mu);
+      //printf("Grid_CollapseTestInitializeGrid: mu[%d] = %e\n", n, mu);
+      //printf("Grid_CollapseTestInitializeGrid: GE[%d] = %e\n", n, BaryonField[1][n]);
 
 	  if (DualEnergyFormalism)
 	    BaryonField[2][n] = BaryonField[1][n];
@@ -1049,6 +1050,7 @@ int grid::CollapseTestInitializeGrid(int NumberOfSpheres,
 
 	} // end loop over grid
 
+  printf("Grid_CollapseTestInitializeGrid: T = %e \n",temperature);
   } // end loop SetupLoopCount
 
   if (UseDrivingField) {

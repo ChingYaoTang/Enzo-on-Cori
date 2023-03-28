@@ -37,6 +37,8 @@ int Star::CalculateMassAccretion(float &BondiRadius, float &density)
       (this->CurrentGrid == NULL)) 
     return SUCCESS;
 
+  //printf("In Star_CalculateMassAccretion\n");
+
   if (this->type == MBH && MBHAccretion == 0)
     return SUCCESS;
 

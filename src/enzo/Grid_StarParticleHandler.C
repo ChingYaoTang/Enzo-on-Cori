@@ -951,7 +951,7 @@ int grid::StarParticleHandler(HierarchyEntry* SubgridPointer, int level,
 	 tg->ParticleAttribute[2], tg->ParticleType, &SingleStarType, 
 	 &RadiationData.IntegratedStarFormation, &RadiativeTransfer);
 
-    if (debug1)
+    if (debug2)
     if (NumberOfNewParticles>0){
       printf("Grid_StarParticleHandler: # of new pop3 particles in grid[id=%d] = %d\n", this->ID, NumberOfNewParticles);
       for (int pcount=0; pcount<NumberOfNewParticles; pcount++){
@@ -1465,9 +1465,9 @@ int grid::StarParticleHandler(HierarchyEntry* SubgridPointer, int level,
 
     if (debug1)
     if (NumberOfNewParticles>0){
-      printf("Grid_StarParticleHandler(After move all particles): # of total particles in grid[id=%d] with size(%d,%d,%d) = %d\n", this->ID, this->GridDimension[0], this->GridDimension[1], this->GridDimension[2], NumberOfParticles);
-      for (int pcount=0; pcount<NumberOfParticles; pcount++)
-          printf("Pop3 particle No.%d: id = %d, mass = %e, type = %d\n", pcount, this->ParticleNumber[pcount], this->ParticleMass[pcount], this->ParticleType[pcount]);
+      printf("Grid_StarParticleHandler(After move all particles): # of total particles in grid[id=%d, lev=%d] with size(%d,%d,%d) = %d\n", this->ID, this->GridLevel, this->GridDimension[0], this->GridDimension[1], this->GridDimension[2], NumberOfParticles);
+//      for (int pcount=0; pcount<NumberOfParticles; pcount++)
+//          printf("Pop3 particle No.%d: id = %d, mass = %e, type = %d\n", pcount, this->ParticleNumber[pcount], this->ParticleMass[pcount], this->ParticleType[pcount]);
     }
 
     /* Clean up and keep it quiet. */

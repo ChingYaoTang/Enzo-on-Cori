@@ -58,7 +58,7 @@ int grid::MoveAllParticles(int NumberOfGrids, grid* FromGrid[])
  
   /* Debugging info. */
 
-  if (debug1)
+  if (debug2)
     printf("Grid_MoveAllParticles to ThisGird: %"ISYM",%"ISYM
            " (before: ThisGrid = %"ISYM",%"ISYM").\n",
            TotalNumberOfParticles, TotalNumberOfActiveParticles,
@@ -147,7 +147,7 @@ int grid::MoveAllParticles(int NumberOfGrids, grid* FromGrid[])
   /* Set new number of particles in this grid. */
  
   NumberOfParticles = TotalNumberOfParticles;
-  printf("Grid_MoveAllParticle: Set new # of particles in grid[id=%d] at level%d = %d\n", ID, GridLevel, NumberOfParticles);
+  //printf("Grid_MoveAllParticle: Set new # of particles in grid[id=%d] at level%d = %d\n", ID, GridLevel, NumberOfParticles);
  
   /* Delete FromGrid's particles (and set number of particles to zero). */
  

@@ -89,6 +89,9 @@ int grid::FindAllStarParticles(int level)
 	NewStar = new Star(this, i, level);
 	InsertStarAfter(Stars, NewStar);
 	NumberOfStars++;
+    if (debug1)
+    if (NewStar->ReturnType()==PARTICLE_TYPE_SINGLE_STAR)
+      printf("Grid_FindAllStarParticles: PopIII Star[star_id=%d, star_lev=%d, star_mass=%e] has been inserted into the list.\n", NewStar->ReturnID(), NewStar->ReturnLevel(), NewStar->ReturnMass());
 
 	/* For MBHFeedback = 2 to 5 (FeedbackFlag=MBH_JETS), you need
 	   the angular momentum; if no file to read in, assume zero

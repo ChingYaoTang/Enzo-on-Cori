@@ -47,6 +47,7 @@ void Star::ActivateNewStar(FLOAT Time, float Timestep)
       if (Mass >= this->FinalMass) {
 	type = StarType;
 	BirthTime = (1-1e-6)*Time;
+    printf("Star_ActivateNewStar: Pop3 star[star_id=%d, star_lev=%d, star_mass=%e] has been activated at %e TimeUnits\n", this->ReturnID(), this->ReturnLevel(), this->ReturnMass(), Time);
       }
       break;
     case PopIII_CF:

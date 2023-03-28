@@ -209,6 +209,7 @@ int grid::ComputeAccelerationFieldExternal()
                  }
               } else {
                  accel = GravConst*PointSourceGravityConstant*MassUnitsDouble*((log(1.0+x )-x /(1.0+x )) /(log(1.0+1.0)-1.0/(1.0+1.0))) /POW(radius*LengthUnits, 2.0) / AccelUnits;
+                 //accel = GravConst*PointSourceGravityConstant*MassUnitsDouble*( (log(x*x+1)+2*log(x+1)-2*atan(x)) / (3*log(2)-2*atan(1)) )/POW(radius*LengthUnits, 2.0) / AccelUnits;
               }
               accel = accel/radius;  // this radius normalizes the multiplication by
 	      // xpos,ypos,zpos done below

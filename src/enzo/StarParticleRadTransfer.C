@@ -39,8 +39,10 @@ int StarParticleRadTransfer(LevelHierarchyEntry *LevelArray[], int level,
 {
 
   /* If photon test simulation, don't change the radiation sources. */
-  if (ProblemType == 50 || ProblemType == 27)
+  if (ProblemType == 50 || ProblemType == 27 || ProblemType == 999){
+    //printf("Skip StarParticlRadTransfer()\n");
     return SUCCESS;
+  }
 
   int i, j, nShine, nbins;
   double Q[MAX_ENERGY_BINS], QTotal;

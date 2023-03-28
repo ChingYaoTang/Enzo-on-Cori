@@ -460,6 +460,7 @@ int grid::Group_WriteGrid(FILE *fptr, char *base_name, int grid_id, HDF5_hid_t f
 		ENZO_FAIL("Error in grid->ComputeTemperatureField.");
       }
  
+      //printf("New_Grid_WriteGrid: T[0] = %e \n",temperature[0]);
       if(CopyOnlyActive == TRUE) {
         this->write_dataset(GridRank, OutDims, "Temperature",
             group_id, file_type_id, (VOIDP) temperature,
